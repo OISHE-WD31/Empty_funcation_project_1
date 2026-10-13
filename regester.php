@@ -10,7 +10,10 @@ $email=$_POST['email'];
 $phone=$_POST['phone'];
 $course=$_POST['course'];
 $password=$_POST['password'];
-// $term_condition=$_POST['term_condition'];
+
+
+$c_password=$_POST['c_password'];
+$term_condition=$_POST['term_condition'];
 
 $reg_time=date("Y-m-d");
 
@@ -33,10 +36,73 @@ if(empty($email)){
 if(empty($phone)){
     $inputError['phone']="Your Phone is required";
 }
-
-
 if(empty($password)){
     $inputError['password']="Your Password is required";
+}
+
+if(count($inputError)==0){
+
+$email_db_check=mysqli_query($dbcon,"SELECT * FROM `users` WHERE `email`='$email'");
+if(mysqli_num_rows($email_db_check)==0){
+
+}else{
+    $email_db_match="This email is already exist";
+
+
+}
+
+    $phone_db_check=mysqli_query($dbcon,"SELECT * FROM `users` WHERE `phone`='$phone'");
+    if(mysqli_num_rows($phone_db_check)==0){
+
+    }else{
+        $phone_db_match="This number is already exist";
+    }
+
+    if(strlen($password)<2){
+        $password_len_check="Your Password must be 5 charecter";
+    }else{
+        $password_db_check=mysqli_query($dbcon,"SELECT * FROM `users` WHERE `password`='$password'");
+
+        if(mysqli_num_rows($password_db_check)==0){
+
+        if($password==$c_password){
+            $password=md5($c_password);
+            
+          
+        }else{
+            $confirm_password_match="Confirm password dosent match";
+            
+        }
+           
+        }else{
+            $password_db_match="This password is already exist";
+
+
+        }
+          $insert_db=mysqli_query($dbcon,"INSERT INTO `users`( `full_name`, `email`, `phone`, `course`, `Password`, `term_condition`,`reg_time`) VALUES ('$first_name','$email','$phone','$course','$password','$term_condition','$reg_time')");
+
+        if($insert_db){
+            echo"
+            <script>
+            alert('successfull');
+            window.location.href='regester.php';
+            
+            </script>
+            
+            ";
+
+            $first_name=false;
+$last_name=false;
+$email=false;
+$phone=false;
+$course=false;
+$password=false;
+
+
+$c_password=false;
+$term_condition=false;
+        }
+    }
 }
 }
 ?>
@@ -125,6 +191,12 @@ if(empty($password)){
                     }
                     ?></label>
 
+                      <label for="" style="color:red";><?php
+                    if(isset( $email_db_match)){
+                        echo  $email_db_match;
+                    }
+                    ?></label>
+
                 </div>
 
                 <div class="input-box">
@@ -138,6 +210,12 @@ if(empty($password)){
                 <label for="" style="color:red;"><?php
                 if(isset($inputError['phone'])){
                     echo $inputError['phone'];
+                }
+                ?></label>
+
+                      <label for="" style="color:red;"><?php
+                if(isset($phone_db_match)){
+                    echo $phone_db_match;
                 }
                 ?></label>
 
@@ -174,11 +252,36 @@ if(empty($password)){
                         ?>
                     </label>
 
+                     <label for="" style="color:red;">
+                        <?php
+                        if(isset($password_len_check)){
+                            echo $password_len_check;
+                        }
+                        ?>
+                    </label>
+
+                    <label for="" style="color:red;">
+                        <?php
+                        if(isset($password_db_match)){
+                            echo $password_db_match;
+                        }
+                        ?>
+                    </label>
+
                     </div>
 
                     <div class="input-box">
                         <label>Confirm Password</label>
-                        <input type="password" placeholder="Confirm password">
+                        <input type="password" placeholder="Confirm password" name="c_password">
+
+                             <label for="" style="color:red;">
+                        <?php
+                        if(isset($confirm_password_match)){
+                            echo $confirm_password_match;
+                        }
+                        ?>
+                    </label>
+
                     </div>
 
                 </div>
